@@ -1,0 +1,83 @@
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+public class CovidFrame extends JPanel implements ActionListener{
+
+	int numPeople = 100;
+	ArrayList<Person> people = new ArrayList<Person>();
+	ArrayList<Line> line = new ArrayList<Line>();
+	int time = 0;
+	
+	public static void main(String[] arg) {
+		CovidFrame sim = new CovidFrame();
+	}
+	
+	public void paint(Graphics g) {
+		super.paintComponent(g);
+		//have the person objects draw themselves
+		for(Person p: people) {
+			p.paint(g);
+		}
+		
+		for(Line l: line) {
+			l.paint(g);
+		}
+		
+		g.setColor(Color.black);
+		g.drawString("Num Infected: "+ people.get(0).infected,100,100);
+	}
+	
+	//update - will have collision detection
+	public void update() {
+		time +=20;
+		for(int i = 0; i<people.size()-1; i++) {
+			for(int j = i+1; j<people.size(); j++) {
+				people.get(i).collide(people.get(j));
+			}
+		}
+		
+		if(time%100==0) {
+			line.add(new Line(time/100, 200, time/100, 200-Math.abs(Person.infected)));
+		}
+		
+	}
+	
+	
+	public CovidFrame() {
+		
+		JFrame frame = new JFrame();
+		frame.setSize(800,600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//add int numPeople amount into Arry List of People object
+		for(int i = 0; i<100; i++) {
+			people.add(new Person());
+		}
+		
+		
+		Timer t = new Timer(16, this);
+		t.start();
+		
+		frame.add(this);
+		frame.setVisible(true);
+		
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		repaint();
+		update(); 
+	}
+	
+	
+	
+}
